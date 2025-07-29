@@ -1,0 +1,144 @@
+<div class="employee-management">
+  <div class="container">
+    <h1>Employee Management System</h1>
+
+    <!-- Message Display -->
+    <div *ngIf="message" class="message" [ngClass]="messageType">
+      {{ message }}
+    </div>
+
+    <!-- Loading Spinner -->
+    <div *ngIf="loading" class="loading">
+      <div class="spinner"></div>
+      <span>Loading...</span>
+    </div>
+
+    <!-- Employee Form -->
+    <div class="form-section">
+      <h2>{{ editingEmployee ? 'Update Employee' : 'Add New Employee' }}</h2>
+      <form [formGroup]="employeeForm" (ngSubmit)="onSubmit()" class="employee-form">
+        <div class="form-group">
+          <label for="name">Name *</label>
+          <input 
+            type="text" 
+            id="name" 
+            formControlName="name" 
+            [class.error]="isFieldInvalid('name')"
+            placeholder="Enter employee name">
+          <div *ngIf="isFieldInvalid('name')" class="error-message">
+            {{ getFieldError('name') }}
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="position">Position *</label>
+          <input 
+            type="text" 
+            id="position" 
+            formControlName="position" 
+            [class.error]="isFieldInvalid('position')"
+            placeholder="Enter employee position">
+          <div *ngIf="isFieldInvalid('position')" class="error-message">
+            {{ getFieldError('position') }}
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="salary">Salary *</label>
+          <input 
+            type="number" 
+            id="salary" 
+            formControlName="salary" 
+            [class.error]="isFieldInvalid('salary')"
+            placeholder="Enter employee salary">
+          <div *ngIf="isFieldInvalid('salary')" class="error-message">
+            {{ getFieldError('salary') }}
+          </div>
+        </div>
+
+        <div class="form-actions">
+          <button type="submit" class="btn btn-primary" [disabled]="loading">
+            {{ editingEmployee ? 'Update Employee' : 'Add Employee' }}
+          </button>
+          <button type="button" class="btn btn-secondary" (click)="resetForm()" [disabled]="loading">
+            Cancel
+          </button>
+        </div>
+      </form>
+    </div>
+
+    <!-- Search Section -->
+    <div class="search-section">
+      <h2>Search Employees</h2>
+      <form [formGroup]="searchForm" class="search-form">
+        <div class="search-group">
+          <input 
+            type="text" 
+            formControlName="searchName" 
+            placeholder="Enter name to search..."
+            class="search-input">
+          <button type="button" class="btn btn-search" (click)="searchEmployees()" [disabled]="loading">
+            Search
+          </button>
+          <button type="button" class="btn btn-secondary" (click)="clearSearch()" [disabled]="loading">
+            Clear
+          </button>
+        </div>
+      </form>
+    </div>
+
+    <!-- Employee List -->
+    <div class="list-section">
+      <div class="list-header">
+        <h2>Employee List ({{ employees.length }} employees)</h2>
+        <button 
+          type="button" 
+          class="btn btn-danger" 
+          (click)="deleteAllEmployees()" 
+          [disabled]="loading || employees.length === 0">
+          Delete All Employees
+        </button>
+      </div>
+
+      <div *ngIf="employees.length === 0 && !loading" class="no-employees">
+        <p>No employees found.</p>
+      </div>
+
+      <div *ngIf="employees.length > 0" class="employee-table-container">
+        <table class="employee-table">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Name</th>
+              <th>Position</th>
+              <th>Salary</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let employee of employees" [class.editing]="editingEmployee?.id === employee.id">
+              <td>{{ employee.id }}</td>
+              <td>{{ employee.name }}</td>
+              <td>{{ employee.position }}</td>
+              <td>${{ employee.salary | number:'1.2-2' }}</td>
+              <td class="actions">
+                <button 
+                  class="btn btn-edit" 
+                  (click)="editEmployee(employee)" 
+                  [disabled]="loading">
+                  Edit
+                </button>
+                <button 
+                  class="btn btn-delete" 
+                  (click)="deleteEmployee(employee.id!)" 
+                  [disabled]="loading">
+                  Delete
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
